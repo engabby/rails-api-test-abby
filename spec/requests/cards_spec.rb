@@ -3,15 +3,17 @@ require 'rails_helper'
 
 RSpec.describe 'Cards API' do
   # Initialize the test data
-  let!(:list) { create(:list) }
+  let(:user) { create(:user) }
+  let!(:list) { create(:list,created_by: user.id) }
   let!(:cards) { create_list(:card, 10, list_id: list.id) }
   let(:list_id) { list.id }
   let(:card_id) { cards.first.id }
+  let(:headers) { valid_headers }
 
   # Test suite for GET /cards
   describe 'GET /cards' do
     # make HTTP get request before each example
-    before { get '/cards' }
+    before { get '/cards',params: {}, headers: headers }
 
     it 'returns cards' do
       # Note `json` is a custom helper to parse JSON responses
@@ -26,7 +28,7 @@ RSpec.describe 'Cards API' do
 
   # Test suite for GET /cards/:id
   describe 'GET /cards/:id' do
-    before { get "/cards/#{card_id}" }
+    before { get "/cards/#{card_id}",params: {}, headers: headers }
 
     context 'when the record exists' do
       it 'returns the card' do
@@ -56,10 +58,10 @@ RSpec.describe 'Cards API' do
   # Test suite for POST /cards
   describe 'POST /cards' do
     # valid payload
-    let(:valid_attributes) { { title: 'Learn Elm', description: 'Visit Narnia',list_id: list_id} }
+    let(:valid_attributes) { { title: 'Learn Elm', description: 'Visit Narnia',list_id: list_id}.to_json }
 
     context 'when the request is valid' do
-      before { post '/cards', params: valid_attributes }
+      before { post '/cards', params: valid_attributes,headers:headers }
 
       it 'creates a card' do
         expect(json['title']).to eq('Learn Elm')
@@ -72,7 +74,8 @@ RSpec.describe 'Cards API' do
     end
 
     context 'when the request is invalid' do
-      before { post '/cards', params: { description: 'Foobar',list_id: list_id } }
+      let(:invalid_attributes) { { description: 'Foobar',list_id: list_id}.to_json }
+      before { post '/cards', params: invalid_attributes,headers:headers  }
 
       it 'returns status code 422' do
         expect(response).to have_http_status(422)
@@ -87,10 +90,10 @@ RSpec.describe 'Cards API' do
 
   # Test suite for PUT /cards/:id
   describe 'PUT /cards/:id' do
-    let(:valid_attributes) { { title: 'ShoppingCard' } }
+    let(:valid_attributes) { { title: 'ShoppingCard' }.to_json }
 
     context 'when the record exists' do
-      before { put "/cards/#{card_id}", params: valid_attributes }
+      before { put "/cards/#{card_id}", params: valid_attributes,headers:headers }
 
       it 'updates the record' do
         expect(response.body).to be_empty
@@ -104,7 +107,7 @@ RSpec.describe 'Cards API' do
 
   # Test suite for DELETE /cards/:id
   describe 'DELETE /cards/:id' do
-    before { delete "/cards/#{card_id}" }
+    before { delete "/cards/#{card_id}",params: {}, headers: headers }
 
     it 'returns status code 204' do
       expect(response).to have_http_status(204)

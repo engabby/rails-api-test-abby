@@ -4,13 +4,17 @@ class ListsController < ApplicationController
 
   # GET /lists
   def index
-    @lists = List.all
+    # get current user lists
+    @lists = current_user.lists
+    #@lists = List.all
     json_response(@lists)
   end
 
   # POST /lists
   def create
-    @list = List.create!(list_params)
+    # create list belonging to current user
+    @list = current_user.lists.create!(list_params)
+    #@list = List.create!(list_params)
     json_response(@list, :created)
   end
 
@@ -35,7 +39,7 @@ class ListsController < ApplicationController
 
   def list_params
     # whitelist params
-    params.permit(:title, :created_by)
+    params.permit(:title)#, :created_by)
   end
 
   def set_list
