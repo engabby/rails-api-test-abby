@@ -14,5 +14,6 @@ FactoryBot.define do
     email 'foo@bar.com'
     password 'foobar'
     is_admin false
+    lists {[FactoryBot.create(:list)]}
   end
 end

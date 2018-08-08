@@ -7,7 +7,8 @@ class User < ApplicationRecord
   has_secure_password
 
   # Model associations
-  has_many :lists, foreign_key: :created_by
+  #has_many :lists, foreign_key: :created_by
+  has_and_belongs_to_many :lists#, foreign_key: :created_by
   has_many :cards, through: :lists
   # Validations
   validates_presence_of :username, :email, :password_digest
