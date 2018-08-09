@@ -6,6 +6,8 @@ RSpec.describe 'Lists API', type: :request do
   let(:user) { create(:user) }
   let!(:lists) { create_list(:list, 10,created_by: user.id) }
   let(:list_id) { lists.first.id }
+  let(:ids_lists) { lists.map{|h| h.id } }
+  let (:lists_new) { user.lists.create_list(lists,10,created_by:user.id) }
   # authorize request
   let(:headers) { valid_headers }
 
@@ -21,6 +23,8 @@ RSpec.describe 'Lists API', type: :request do
       pp json
       pp lists
       pp user.lists
+      pp ids_lists
+      pp lists_new
     end
 
     it 'returns status code 200' do

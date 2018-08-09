@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe User, type: :model do
   # Association test
   # ensure User model has a 1:m relationship with the List model
-  it { should have_and_belong_to_many(:lists) }
+  it { should have_many(:lists) }
   # ensure User model has a 1:m relationship with the Card model
   it { should have_many(:cards) }
   # Validation tests
