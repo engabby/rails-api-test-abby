@@ -1,7 +1,7 @@
 # app/controllers/lists_controller.rb
 class ListsController < ApplicationController
-  before_action :set_list, only: [:show, :update, :destroy,:assign_member]
-  before_action :authorize_as_admin, only: [:create,:update,:destroy, :assign_member]
+  before_action :set_list, only: [:show, :update, :destroy,:assign_member,:unassign_member]
+  before_action :authorize_as_admin, only: [:create,:update,:destroy, :assign_member, :unassign_member]
 
   # GET /lists
   def index
@@ -49,17 +49,39 @@ class ListsController < ApplicationController
     end
   end
 
-  # POST /lists/assign_member/:id
+  # POST /lists/:id/assign_member
   def assign_member
     if @list.created_by.to_i == current_user.id
-      #if users_params[:users]
-      users_params['user_ids'].each.to_i do |id|
-        @list.users << User.find(id)
+      if params[:users_ids]
+        @list.user_ids << params[:users_ids]
+        users_array = params[:users_ids].split(',')
+        users_array.each do |a|
+          @list.users << User.find(a)
+        end
+        head :created
+      else
+        raise(ExceptionHandler::AuthenticationError, Message.invalid_params_users_ids)
       end
-      #end
-        json_response(@list,:created)#, :created)
     else
-      raise(ExceptionHandler::AuthenticationError, Message.invalid_created_by)
+      raise(ExceptionHandler::AuthenticationError, Message.invalid_created_by(params[:id]))
+    end
+  end
+
+  # POST /lists/:id/unassign_member
+  def unassign_member
+    if @list.created_by.to_i == current_user.id
+      if params[:users_ids]
+        @list.user_ids << params[:users_ids]
+        users_array = params[:users_ids].split(',')
+        users_array.each do |a|
+          @list.users.destroy(User.find(a))
+        end
+        head :no_content
+      else
+        raise(ExceptionHandler::AuthenticationError, Message.invalid_params_users_ids)
+      end
+    else
+      raise(ExceptionHandler::AuthenticationError, Message.invalid_created_by(params[:id]))
     end
   end
 
@@ -75,10 +97,11 @@ class ListsController < ApplicationController
     params.permit(:title)#, :created_by)
   end
 
-  def users_params
+  #def users_params
     # whitelist params
-    params.permit(:list,:id,:user_ids, [])
-  end
+    #params.permit(:list,:id, user_ids: [])
+    #params.permit(:users_ids)
+  #end
 
   def set_list
     @list = List.find(params[:id])

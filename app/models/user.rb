@@ -11,7 +11,7 @@ class User < ApplicationRecord
   #, foreign_key: :created_by
   has_many :memberships
   has_many :lists, through: :memberships
-  has_many :cards, through: :lists
+  has_many :cards , dependent: :destroy
   # Validations
   validates_presence_of :username, :email, :password_digest
 
@@ -23,5 +23,9 @@ class User < ApplicationRecord
   # This method tells us if the user is an admin or not.
   def is_admin?
     is_admin == true
+  end
+
+  def is_member?(list_id)
+    lists.exists?(list_id)
   end
 end

@@ -31,7 +31,11 @@ class Message
   def self.expired_token
     'Sorry, your token has expired. Please login to continue.'
   end
-  def self.invalid_created_by
-    'Sorry, created_by params should match current user id'
+  def self.invalid_created_by(list_id)
+    'Sorry, current user does not own the List # '+ list_id.to_s
   end
+  def self.invalid_params_users_ids
+    'Missing users_ids params'
+  end
+
 end
