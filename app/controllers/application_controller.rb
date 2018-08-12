@@ -18,4 +18,9 @@ class ApplicationController < ActionController::API
   def authorize_request
     @current_user = (AuthorizeApiRequest.new(request.headers).call)[:user]
   end
+
+  # Method for checking if current_user is admin or not.
+  def authorize_as_admin
+    raise(ExceptionHandler::AuthenticationError, Message.unauthorized) unless !current_user.nil? && current_user.is_admin?
+  end
 end

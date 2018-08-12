@@ -7,12 +7,19 @@ RSpec.describe 'Lists API', type: :request do
   let!(:lists) { create_list(:list, 10,created_by: user.id) }
   let(:list_id) { lists.first.id }
   let(:ids_lists) { lists.map{|h| h.id } }
-  let (:lists_new) { user.lists.create_list(lists,10,created_by:user.id) }
+  #let (:lists_new) { user.lists.create_list(lists,10,created_by:user.id) }
   # authorize request
   let(:headers) { valid_headers }
+  let (:lists_new) {
+    for c in lists
+      create(:membership,user_id:user.id,list_id:c.id)
+    end
+  }
+
 
   # Test suite for GET /lists
   describe 'GET /lists' do
+
     # make HTTP get request before each example
     before { get '/lists', params: {}, headers: headers }
 

@@ -13,6 +13,13 @@ class UsersController < ApplicationController
     json_response(response, :created)
   end
 
+  # GET /users
+  # return list of all users
+  def show
+    @users = User.all
+    json_response(@users)
+  end
+
   private
 
   def user_params

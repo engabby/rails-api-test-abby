@@ -14,4 +14,14 @@ class User < ApplicationRecord
   has_many :cards, through: :lists
   # Validations
   validates_presence_of :username, :email, :password_digest
+
+  # This method gives us a simple call to check if a user has permission to modify.
+  def can_modify_user?(user_id)
+    is_admin == true || id.to_s == user_id.to_s
+  end
+
+  # This method tells us if the user is an admin or not.
+  def is_admin?
+    is_admin == true
+  end
 end

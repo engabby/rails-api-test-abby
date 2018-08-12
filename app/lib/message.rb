@@ -17,7 +17,7 @@ class Message
   end
 
   def self.unauthorized
-    'Unauthorized request'
+    'Unauthorized request, Admin only'
   end
 
   def self.account_created
@@ -30,5 +30,8 @@ class Message
 
   def self.expired_token
     'Sorry, your token has expired. Please login to continue.'
+  end
+  def self.invalid_created_by
+    'Sorry, created_by params should match current user id'
   end
 end
