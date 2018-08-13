@@ -16,10 +16,12 @@ class CardsController < ApplicationController
     if current_user.is_member?(card_params['list_id']) || current_user.is_admin?
       @list = List.find(card_params['list_id'])
       #@card = Card.create!(card_params)
-      @card = @list.cards.create!(card_params_new)
+      @card = @list.cards.new(card_params_new)
+      @card.user_id = current_user.id
+      @card.save
       json_response(@card, :created)
     else
-      raise(ExceptionHandler::AuthenticationError, Message.unauthorized)
+      raise(ExceptionHandler::AuthenticationError, Message.unauthorized_not_member)
     end
   end
 
@@ -30,14 +32,23 @@ class CardsController < ApplicationController
 
   # PUT /cards/:id
   def update
-    @card.update(card_params)
-    head :no_content
+    if @card.user_id == current_user.id
+      @card.update(card_params_new)
+      head :no_content
+    else
+      raise(ExceptionHandler::AuthenticationError, Message.invalid_owner)
+    end
   end
 
   # DELETE /cards/:id
   def destroy
-    @card.destroy
-    head :no_content
+    @list = List.find(@card.list_id)
+    if (current_user.is_admin? && current_user.id == @list.created_by) || (current_user.is_member?(@list.id) && current_user.id == @card.user_id)
+      @card.destroy
+      head :no_content
+    else
+      raise(ExceptionHandler::AuthenticationError, Message.invalid_owner)
+    end
   end
 
   private

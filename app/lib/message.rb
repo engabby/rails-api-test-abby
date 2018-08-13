@@ -20,6 +20,10 @@ class Message
     'Unauthorized request, Admin only'
   end
 
+  def self.unauthorized_not_member
+    'Unauthorized request, current user is not member in this list'
+  end
+
   def self.account_created
     'Account created successfully'
   end
@@ -34,6 +38,11 @@ class Message
   def self.invalid_created_by(list_id)
     'Sorry, current user does not own the List # '+ list_id.to_s
   end
+
+  def self.invalid_owner
+    'Sorry, current user does not own this object'
+  end
+
   def self.invalid_params_users_ids
     'Missing users_ids params'
   end
