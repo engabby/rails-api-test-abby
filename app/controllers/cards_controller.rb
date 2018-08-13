@@ -7,16 +7,20 @@ class CardsController < ApplicationController
 
   # GET /cards
   def index
-    @cards = Card.all
+    @cards = current_user.cards
     json_response(@cards)
   end
 
   # POST /cards
   def create
-    @list = List.find(card_params['list_id'])
-    #@card = Card.create!(card_params)
-    @card = @list.cards.create!(card_params_new)
-    json_response(@card, :created)
+    if current_user.is_member?(card_params['list_id']) || current_user.is_admin?
+      @list = List.find(card_params['list_id'])
+      #@card = Card.create!(card_params)
+      @card = @list.cards.create!(card_params_new)
+      json_response(@card, :created)
+    else
+      raise(ExceptionHandler::AuthenticationError, Message.unauthorized)
+    end
   end
 
   # GET /cards/:id
