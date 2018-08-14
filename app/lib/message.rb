@@ -16,6 +16,10 @@ class Message
     'Missing token'
   end
 
+  def self.missing_parameters
+    'Missing parameters'
+  end
+
   def self.unauthorized
     'Unauthorized request, Admin only'
   end
