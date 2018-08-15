@@ -4,12 +4,22 @@ class CommentsController < ApplicationController
   # GET /comments
   def index
     if(params.has_key?(:card_id))
-      @comments = Comment.where(card_id: params['card_id'])
-      json_response(@comments)
+      if(params.has_key?(:page) && params.has_key?(:per_page))
+        @comments = Comment.where(card_id: params['card_id']).paginate(page: params[:page], per_page: params[:per_page])
+        json_response(@comments)
+      else
+        @comments = Comment.where(card_id: params['card_id'])
+        json_response(@comments)
+      end
 
     elsif (params.has_key?(:comment_id))
-      @comments = Comment.where(parent_id: params['comment_id'])
-      json_response(@comments)
+      if(params.has_key?(:page) && params.has_key?(:per_page))
+        @comments = Comment.where(parent_id: params['comment_id']).paginate(page: params[:page], per_page: params[:per_page])
+        json_response(@comments)
+      else
+        @comments = Comment.where(parent_id: params['comment_id'])
+        json_response(@comments)
+      end
     else
       raise(ExceptionHandler::AuthenticationError, Message.missing_parameters)
     end
@@ -40,26 +50,26 @@ class CommentsController < ApplicationController
     end
   end
 
-  # GET /cards/:id
+  # GET /comments/:id
   def show
-    json_response(@card)
+    render json: @comment, include: :replies
   end
 
-  # PUT /cards/:id
+  # PUT /comments/:id
   def update
-    if @card.user_id == current_user.id
-      @card.update(card_params_new)
+    if @comment.user_id == current_user.id
+      @comment.update(comment_params)
       head :no_content
     else
       raise(ExceptionHandler::AuthenticationError, Message.invalid_owner)
     end
   end
 
-  # DELETE /cards/:id
+  # DELETE /comments/:id
   def destroy
-    @list = List.find(@card.list_id)
-    if (current_user.is_admin? && current_user.id == @list.created_by) || (current_user.is_member?(@list.id) && current_user.id == @card.user_id)
-      @card.destroy
+    @card = Card.find(@comment.card_id)
+    if (current_user.is_admin? && current_user.id == @card.list.created_by) || (current_user.is_member?(@card.list_id) && current_user.id == @comment.user_id)
+      @comment.destroy
       head :no_content
     else
       raise(ExceptionHandler::AuthenticationError, Message.invalid_owner)

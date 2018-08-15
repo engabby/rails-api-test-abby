@@ -16,6 +16,8 @@ gem 'faker'
 gem 'database_cleaner'
 gem 'bcrypt', '~> 3.1.7'
 gem 'jwt'
+gem 'counter_cache_with_conditions'
+ gem 'will_paginate', '~> 3.1.0'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 # gem 'jbuilder', '~> 2.5'
 # Use Redis adapter to run Action Cable in production

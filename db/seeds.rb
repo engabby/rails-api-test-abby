@@ -5,3 +5,7 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+50.times do
+  comment = Comment.create(content: Faker::Lorem.word, user_id: User.first.id,card_id:Card.first.id)
+  #todo.items.create(name: Faker::Lorem.word, done: false)
+end

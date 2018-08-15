@@ -7,7 +7,7 @@ class CardsController < ApplicationController
 
   # GET /cards
   def index
-    @cards = current_user.cards
+    @cards = current_user.cards.featured
     json_response(@cards)
   end
 
@@ -27,7 +27,7 @@ class CardsController < ApplicationController
 
   # GET /cards/:id
   def show
-    json_response(@card)
+    render json: @card, include: :first_three_comments
   end
 
   # PUT /cards/:id
